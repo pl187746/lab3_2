@@ -33,28 +33,29 @@ public class NewsLoaderTest {
 	
 	@Test
 	public void newsyDoOpublikowaniaSaPubliczne() {
-		prepareIncomingNews(SubsciptionType.NONE);
-		NewsLoader newsLoader = new NewsLoader();
-		PublishableNews publishableNews = newsLoader.loadNews();
+		PublishableNews publishableNews = performTest(SubsciptionType.NONE);
 		assertThat(publishableNews.getPublicContent().isEmpty(), is(false));
 		assertThat(publishableNews.getSubscribentContent().isEmpty(), is(true));
 	}
 	
 	@Test
 	public void newsyDlaSubskrybentowSaDostepneTylkoDlaSubskrybentow() {
-		prepareIncomingNews(SubsciptionType.A);
-		NewsLoader newsLoader = new NewsLoader();
-		PublishableNews publishableNews = newsLoader.loadNews();
+		PublishableNews publishableNews = performTest(SubsciptionType.A);
 		assertThat(publishableNews.getPublicContent().isEmpty(), is(true));
 		assertThat(publishableNews.getSubscribentContent().isEmpty(), is(false));
 	}
 	
 	@Test
 	public void newsLoaderPobieraKonfiguracje() {
-		prepareIncomingNews(SubsciptionType.NONE);
-		NewsLoader newsLoader = new NewsLoader();
-		newsLoader.loadNews();
+		performTest(SubsciptionType.NONE);
 		verify(configurationLoader).loadConfiguration();
+	}
+	
+	private PublishableNews performTest(SubsciptionType type) {
+		prepareIncomingNews(type);
+		NewsLoader newsLoader = new NewsLoader();
+		PublishableNews publishableNews = newsLoader.loadNews();
+		return publishableNews;
 	}
 	
 	private void prepareIncomingNews(SubsciptionType type) {
