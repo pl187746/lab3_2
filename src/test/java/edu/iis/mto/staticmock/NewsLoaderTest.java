@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import org.junit.Before;
@@ -19,11 +20,13 @@ import edu.iis.mto.staticmock.reader.NewsReader;
 @PrepareForTest({ConfigurationLoader.class, NewsReaderFactory.class})
 public class NewsLoaderTest {
 	
+	ConfigurationLoader configurationLoader;
+	
 	@Before
 	public void setUp() {
 		mockStatic(ConfigurationLoader.class);
 		Configuration configuration = new Configuration();
-		ConfigurationLoader configurationLoader = mock(ConfigurationLoader.class);
+		configurationLoader = mock(ConfigurationLoader.class);
 		when(configurationLoader.loadConfiguration()).thenReturn(configuration);
 		when(ConfigurationLoader.getInstance()).thenReturn(configurationLoader);
 	}
@@ -44,6 +47,14 @@ public class NewsLoaderTest {
 		PublishableNews publishableNews = newsLoader.loadNews();
 		assertThat(publishableNews.getPublicContent().isEmpty(), is(true));
 		assertThat(publishableNews.getSubscribentContent().isEmpty(), is(false));
+	}
+	
+	@Test
+	public void newsLoaderPobieraKonfiguracje() {
+		prepareIncomingNews(SubsciptionType.NONE);
+		NewsLoader newsLoader = new NewsLoader();
+		newsLoader.loadNews();
+		verify(configurationLoader).loadConfiguration();
 	}
 	
 	private void prepareIncomingNews(SubsciptionType type) {
