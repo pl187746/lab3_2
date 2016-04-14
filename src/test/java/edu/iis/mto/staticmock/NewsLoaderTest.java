@@ -37,6 +37,15 @@ public class NewsLoaderTest {
 		assertThat(publishableNews.getSubscribentContent().isEmpty(), is(true));
 	}
 	
+	@Test
+	public void newsyDlaSubskrybentowSaDostepneTylkoDlaSubskrybentow() {
+		prepareIncomingNews(SubsciptionType.A);
+		NewsLoader newsLoader = new NewsLoader();
+		PublishableNews publishableNews = newsLoader.loadNews();
+		assertThat(publishableNews.getPublicContent().isEmpty(), is(true));
+		assertThat(publishableNews.getSubscribentContent().isEmpty(), is(false));
+	}
+	
 	private void prepareIncomingNews(SubsciptionType type) {
 		mockNewsReaderFactory(mockNewsReader(createIncomingNews(type)));
 	}
