@@ -30,16 +30,32 @@ public class NewsLoaderTest {
 	
 	@Test
 	public void newsyDoOpublikowaniaSaPubliczne() {
-		IncomingNews incomingNews = new IncomingNews();
-		incomingNews.add(new IncomingInfo("Hello world!", SubsciptionType.NONE));
-		NewsReader newsReader = mock(NewsReader.class);
-		when(newsReader.read()).thenReturn(incomingNews);
-		mockStatic(NewsReaderFactory.class);
-		when(NewsReaderFactory.getReader(any(String.class))).thenReturn(newsReader);
+		prepareIncomingNews(SubsciptionType.NONE);
 		NewsLoader newsLoader = new NewsLoader();
 		PublishableNews publishableNews = newsLoader.loadNews();
 		assertThat(publishableNews.getPublicContent().isEmpty(), is(false));
 		assertThat(publishableNews.getSubscribentContent().isEmpty(), is(true));
+	}
+	
+	private void prepareIncomingNews(SubsciptionType type) {
+		mockNewsReaderFactory(mockNewsReader(createIncomingNews(type)));
+	}
+	
+	private void mockNewsReaderFactory(NewsReader newsReader) {
+		mockStatic(NewsReaderFactory.class);
+		when(NewsReaderFactory.getReader(any(String.class))).thenReturn(newsReader);
+	}
+	
+	private NewsReader mockNewsReader(IncomingNews incomingNews) {
+		NewsReader newsReader = mock(NewsReader.class);
+		when(newsReader.read()).thenReturn(incomingNews);
+		return newsReader;
+	}
+	
+	private IncomingNews createIncomingNews(SubsciptionType type) {
+		IncomingNews incomingNews = new IncomingNews();
+		incomingNews.add(new IncomingInfo("Hello world!", type));
+		return incomingNews;
 	}
 
 }
